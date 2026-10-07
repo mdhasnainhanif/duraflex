@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="50%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+    <linearGradient id="foamTop" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E0E7FF"/>
+    </linearGradient>
+    <linearGradient id="foamMid" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A5B4FC"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+    <linearGradient id="foamAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1E1B4B" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="24" y="24" width="464" height="464" rx="116" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle inner border for premium bezel feel -->
+  <rect x="24" y="24" width="464" height="464" rx="116" fill="none" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="4"/>
+
+  <!-- Brand Emblem: "D" formed by sleek contoured mattress comfort layers -->
+  <g filter="url(#shadow)">
+    <!-- Layer 1: Top quilted plush surface (pure white with soft curve) -->
+    <path d="M140 148 C140 132 154 120 172 120 L270 120 C345 120 392 165 392 236 C392 278 372 312 338 332 C330 336 320 332 318 322 C315 308 308 280 270 280 L204 280 C194 280 186 272 186 262 L186 166 C186 156 178 148 168 148 L140 148 Z" 
+          fill="url(#foamTop)"/>
+
+    <!-- Layer 2: Memory foam contour / Flex wave (sky blue cooling gel accent) -->
+    <path d="M140 215 C140 205 148 198 158 198 L240 198 C280 198 310 216 318 250 C320 260 312 268 302 268 L158 268 C148 268 140 260 140 250 Z" 
+          fill="url(#foamAccent)"/>
+
+    <!-- Layer 3: Orthopedic support base layer (periwinkle indigo) -->
+    <path d="M140 285 C140 275 148 268 158 268 L275 268 C318 268 350 290 358 330 C368 376 335 408 275 408 L172 408 C154 408 140 396 140 380 Z" 
+          fill="url(#foamMid)"/>
+
+    <!-- Sparkle / Sleep Star in top right -->
+    <path d="M375 110 Q375 130 395 130 Q375 130 375 150 Q375 130 355 130 Q375 130 375 110 Z" 
+          fill="#FDE047"/>
+  </g>
+</svg>
