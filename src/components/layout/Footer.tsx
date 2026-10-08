@@ -241,7 +241,7 @@ export const Footer: React.FC = () => {
       {/* Bottom bar */}
       <div className="border-t border-white/10 py-5">
         <Container className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
-          <p>© {new Date().getFullYear()} Dura Flex. All rights reserved. Made with ❤️ in Pakistan.</p>
+          <p>© 2025 Dura Flex. All rights reserved. Made with ❤️ in Pakistan.</p>
           <div className="flex items-center gap-4">
             <Link href="/terms-and-conditions" className="hover:text-white transition-colors">
               Terms
