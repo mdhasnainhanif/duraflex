@@ -4,7 +4,7 @@ export const SITE_CONFIG = {
   description:
     'Pakistan\'s premium mattress brand. Shop foam, orthopedic, memory foam, cooling gel mattresses, pillows and sleep accessories. Free delivery, 100-night trial, 10-year warranty.',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://duraflex.pk',
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '923132183210',
+  whatsappNumber: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '923132183210').replace(/\D/g, '') || '923132183210',
   email: 'hello@duraflex.pk',
   phone: '+92 313 2183210',
   address: 'Ayesha Manzil, Karachi, Pakistan',
@@ -14,7 +14,7 @@ export const SITE_CONFIG = {
     instagram: 'https://instagram.com/duraflex',
     tiktok: 'https://tiktok.com/@duraflex',
     youtube: 'https://youtube.com/@duraflex',
-    whatsapp: `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '923132183210'}`,
+    whatsapp: `https://wa.me/${(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '923132183210').replace(/\D/g, '') || '923132183210'}`,
   },
 } as const;
 

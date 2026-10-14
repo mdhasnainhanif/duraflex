@@ -45,7 +45,7 @@ export const BLOG_POSTS: BlogPostItem[] = [
     author: {
       name: 'Dr. Ayesha Malik',
       role: 'Consultant Orthopedic Sleep Specialist',
-      avatar: '/images/products/ortho-med-1.jpg',
+      avatar: '/images/avatars/avatar-2.jpg',
     },
     publishedAt: 'October 12, 2024',
     readTime: 6,
@@ -115,7 +115,7 @@ export const BLOG_POSTS: BlogPostItem[] = [
     author: {
       name: 'Dr. Tariq Mansoor',
       role: 'Spine & Posture Consultant',
-      avatar: '/images/products/ortho-med-1.jpg',
+      avatar: '/images/avatars/avatar-1.jpg',
     },
     publishedAt: 'September 28, 2024',
     readTime: 7,
@@ -182,7 +182,7 @@ export const BLOG_POSTS: BlogPostItem[] = [
     author: {
       name: 'Dura Flex Care Team',
       role: 'Quality & Maintenance Experts',
-      avatar: '/images/products/cool-gel-1.jpg',
+      avatar: '/images/avatars/avatar-4.jpg',
     },
     publishedAt: 'August 24, 2024',
     readTime: 5,
@@ -238,12 +238,12 @@ export const BLOG_POSTS: BlogPostItem[] = [
     title: 'Cooling Gel vs Traditional Memory Foam: What You Need for Pakistani Summers',
     excerpt:
       'Tired of waking up drenched in sweat during hot summer nights? Here is how phase-change cooling gel technology regulates body heat compared to regular foam.',
-    coverImage: '/images/products/cool-gel-1.jpg',
+    coverImage: '/images/products/dura-cool-gel-1.jpg',
     category: 'Sleep Science',
     author: {
       name: 'Hamza Farooq',
       role: 'Materials & Thermal Engineer',
-      avatar: '/images/products/cool-gel-1.jpg',
+      avatar: '/images/avatars/avatar-3.jpg',
     },
     publishedAt: 'July 19, 2024',
     readTime: 6,
@@ -292,12 +292,12 @@ export const BLOG_POSTS: BlogPostItem[] = [
     title: '7 Warning Signs It’s Time to Replace Your Old Mattress',
     excerpt:
       'Is your mattress older than 7 years? Discover the telltale signs that your bed is secretly damaging your health, mood, and daily productivity.',
-    coverImage: '/images/products/dura-cloud-1.jpg',
+    coverImage: '/images/products/dura-cloud-pillow-top-1.jpg',
     category: 'Buying Guides',
     author: {
       name: 'Dr. Ayesha Malik',
       role: 'Consultant Orthopedic Sleep Specialist',
-      avatar: '/images/products/ortho-med-1.jpg',
+      avatar: '/images/avatars/avatar-2.jpg',
     },
     publishedAt: 'June 14, 2024',
     readTime: 5,
@@ -350,12 +350,12 @@ export const BLOG_POSTS: BlogPostItem[] = [
     title: 'The Best Sleep Postures for Sciatica, Neck Pain & Spine Health',
     excerpt:
       'Learn how simple adjustments with pillows and supportive mattress contouring can unlock pain-free mornings and optimal circulation.',
-    coverImage: '/images/products/ortho-med-1.jpg',
+    coverImage: '/images/products/dura-ortho-medical-1.jpg',
     category: 'Health & Wellness',
     author: {
       name: 'Dr. Tariq Mansoor',
       role: 'Spine & Posture Consultant',
-      avatar: '/images/products/ortho-med-1.jpg',
+      avatar: '/images/avatars/avatar-1.jpg',
     },
     publishedAt: 'May 30, 2024',
     readTime: 6,

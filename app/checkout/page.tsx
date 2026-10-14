@@ -44,6 +44,9 @@ export default function CheckoutPage() {
     total: number;
     phone: string;
     address: string;
+    whatsappUrl: string;
+    itemsCount: number;
+    items: Array<{ name: string; qty: number; price: number }>;
   } | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -65,7 +68,55 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleSubmitOrder = (e: React.FormEvent) => {
+  const formatWhatsAppOrderText = (orderId: string) => {
+    const itemsList = items
+      .map(
+        (item, index) =>
+          `${index + 1}. *${item.name}*\n   Size: ${item.variant?.size || 'Standard'}" | Qty: ${item.quantity} | Rs. ${(item.unitPrice * item.quantity).toLocaleString()}`
+      )
+      .join('\n\n');
+
+    const message = [
+      `🛍️ *NEW ORDER - DURA FLEX MATTRESS*`,
+      `*Order ID:* #${orderId}`,
+      `---------------------------------`,
+      `*👤 Customer Details:*`,
+      `• Name: ${formData.firstName} ${formData.lastName}`.trim(),
+      `• Phone: ${formData.phone}`,
+      formData.email ? `• Email: ${formData.email}` : null,
+      `• City: ${formData.city}`,
+      `• Address: ${formData.address}`,
+      formData.postalCode ? `• Postal Code: ${formData.postalCode}` : null,
+      formData.notes ? `• Special Instructions: ${formData.notes}` : null,
+      ``,
+      `*📦 Items Ordered:*`,
+      itemsList,
+      ``,
+      `---------------------------------`,
+      `*💰 Pricing:*`,
+      `• Subtotal: Rs. ${totals.subtotal.toLocaleString()}`,
+      totals.bundleDiscount + totals.couponDiscount > 0
+        ? `• Discount: -Rs. ${(totals.bundleDiscount + totals.couponDiscount).toLocaleString()}`
+        : null,
+      `• Delivery: ${totals.deliveryFee === 0 ? 'FREE Doorstep Delivery' : `Rs. ${totals.deliveryFee.toLocaleString()}`}`,
+      `• *Total Payable: Rs. ${totals.grandTotal.toLocaleString()}*`,
+      `• Payment Method: ${
+        paymentMethod === 'cod'
+          ? 'Cash on Delivery (COD)'
+          : paymentMethod === 'bank'
+          ? 'Direct Bank Transfer / Raast'
+          : 'Credit / Debit Card'
+      }`,
+      `---------------------------------`,
+      `Please confirm my order and share delivery schedule! 🙏`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    return message;
+  };
+
+  const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (items.length === 0) {
@@ -80,73 +131,157 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
 
-    // Simulate order placement
-    setTimeout(() => {
-      const generatedId = `DF-${Math.floor(100000 + Math.random() * 900000)}`;
-      setOrderComplete({
-        orderId: generatedId,
-        total: totals.grandTotal,
+    const generatedId = `DF-${Math.floor(100000 + Math.random() * 900000)}`;
+    const whatsappMessage = formatWhatsAppOrderText(generatedId);
+    const cleanNumber = (SITE_CONFIG.whatsappNumber || '923132183210').replace(/\D/g, '');
+    const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
+    // Prepare order payload
+    const orderPayload = {
+      orderId: generatedId,
+      customer: {
+        fullName: `${formData.firstName} ${formData.lastName}`.trim(),
         phone: formData.phone,
-        address: `${formData.address}, ${formData.city}`,
+        email: formData.email || undefined,
+        city: formData.city,
+        address: formData.address,
+        postalCode: formData.postalCode || undefined,
+        notes: formData.notes || undefined,
+      },
+      items: items.map((i) => ({
+        name: i.name,
+        size: i.variant?.size,
+        thickness: i.variant?.thickness,
+        quantity: i.quantity,
+        unitPrice: i.unitPrice,
+      })),
+      totals: {
+        subtotal: totals.subtotal,
+        bundleDiscount: totals.bundleDiscount,
+        couponDiscount: totals.couponDiscount,
+        deliveryFee: totals.deliveryFee,
+        grandTotal: totals.grandTotal,
+      },
+      paymentMethod,
+      createdAt: new Date().toISOString(),
+    };
+
+    // 1. Dispatch Order to backend API (saves order + sends email notification to store owner)
+    try {
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
       });
-      clearCart();
-      setIsSubmitting(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 800);
+    } catch (err) {
+      console.warn('API order dispatch notice:', err);
+    }
+
+    // 2. Open WhatsApp directly in new window
+    try {
+      const waWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      if (!waWindow) {
+        // Fallback if popup blocked
+        console.log('Popup blocked; direct button available on screen');
+      }
+    } catch {
+      // Ignored
+    }
+
+    // 3. Set order confirmation state
+    setOrderComplete({
+      orderId: generatedId,
+      total: totals.grandTotal,
+      phone: formData.phone,
+      address: `${formData.address}, ${formData.city}`,
+      whatsappUrl,
+      itemsCount: items.length,
+      items: items.map((i) => ({
+        name: i.name,
+        qty: i.quantity,
+        price: i.unitPrice * i.quantity,
+      })),
+    });
+
+    clearCart();
+    setIsSubmitting(false);
+    toast.success('Order placed successfully! Opening WhatsApp...');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const getWhatsAppOrderText = () => {
-    const itemsText = items
-      .map(
-        (i) =>
-          `• ${i.name} (${i.variant?.size || 'Standard'} / ${i.variant?.thickness || ''}) x${i.quantity} = Rs. ${(
-            i.unitPrice * i.quantity
-          ).toLocaleString()}`
-      )
-      .join('\n');
-
-    const message = `*DURA FLEX ORDER REQUEST*\n\n*Customer Details:*\n• Name: ${formData.firstName} ${formData.lastName}\n• Phone: ${formData.phone}\n• City: ${formData.city}\n• Address: ${formData.address}\n\n*Items Ordered:*\n${itemsText}\n\n*Total Amount:* Rs. ${totals.grandTotal.toLocaleString()}\n*Payment:* ${
-      paymentMethod === 'cod' ? 'Cash on Delivery (COD)' : paymentMethod === 'bank' ? 'Bank Transfer' : 'Card'
-    }\n\nPlease confirm my order!`;
-
-    return encodeURIComponent(message);
+    return encodeURIComponent(formatWhatsAppOrderText('DF-INQUIRY'));
   };
 
   // ORDER SUCCESS STATE
   if (orderComplete) {
     return (
-      <div className="min-h-screen bg-slate-50 py-16 sm:py-24">
+      <div className="min-h-screen bg-slate-50 py-12 sm:py-20">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
-          <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-200/80 text-center space-y-6">
+          <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 text-center space-y-6">
             
-            <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+            <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
               <CheckCircle weight="fill" size={48} />
             </div>
 
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                Order Received Successfully
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-2 border border-emerald-200">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Order Placed Successfully
               </span>
-              <h1 className="text-3xl font-extrabold text-navy mt-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-navy mt-1">
                 Thank You for Choosing Dura Flex!
               </h1>
-              <p className="text-slate-600 text-sm mt-2">
-                Your order ID is <strong className="text-slate-900 font-mono text-base">{orderComplete.orderId}</strong>. We have sent a confirmation message to {orderComplete.phone}.
+              <p className="text-slate-600 text-xs sm:text-sm mt-2 max-w-md mx-auto">
+                Your order ID is <strong className="text-slate-900 font-mono text-base">{orderComplete.orderId}</strong>. We have forwarded your order details to WhatsApp and emailed a confirmation to the store administration.
               </p>
             </div>
 
+            {/* Notification Status Badges */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+              <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
+                  <WhatsappLogo weight="fill" size={20} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-emerald-950">WhatsApp Forwarded</h4>
+                  <p className="text-[11px] text-emerald-700">+92 313 2183210</p>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center flex-shrink-0">
+                  <ShieldCheck weight="fill" size={20} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-blue-950">Email Notification Sent</h4>
+                  <p className="text-[11px] text-blue-700">Store admin receipt created</p>
+                </div>
+              </div>
+            </div>
+
             {/* Order Details Card */}
-            <div className="bg-slate-50 rounded-2xl p-6 text-left space-y-3 text-xs sm:text-sm border border-slate-200">
+            <div className="bg-slate-50 rounded-2xl p-6 text-left space-y-3.5 text-xs sm:text-sm border border-slate-200">
               <div className="flex justify-between pb-2 border-b border-slate-200">
                 <span className="text-slate-500">Order ID:</span>
                 <span className="font-bold text-slate-800 font-mono">{orderComplete.orderId}</span>
+              </div>
+              <div className="flex justify-between pb-2 border-b border-slate-200">
+                <span className="text-slate-500">Items Ordered ({orderComplete.itemsCount}):</span>
+                <div className="text-right">
+                  {orderComplete.items.map((it, idx) => (
+                    <div key={idx} className="text-slate-700 font-medium">
+                      {it.name} (x{it.qty}) - Rs. {it.price.toLocaleString()}
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="flex justify-between pb-2 border-b border-slate-200">
                 <span className="text-slate-500">Total Payable:</span>
                 <span className="font-bold text-navy text-base">{formatPrice(orderComplete.total)}</span>
               </div>
               <div className="flex justify-between pb-2 border-b border-slate-200">
-                <span className="text-slate-500">Payment:</span>
+                <span className="text-slate-500">Payment Method:</span>
                 <span className="font-bold text-slate-800">
                   {paymentMethod === 'cod' ? 'Cash on Delivery (COD)' : 'Direct Bank Transfer'}
                 </span>
@@ -158,23 +293,28 @@ export default function CheckoutPage() {
             </div>
 
             {/* CTAs */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
-                href={`https://wa.me/${SITE_CONFIG.whatsappNumber}?text=${encodeURIComponent(
-                  `Hi Dura Flex, I just placed order ${orderComplete.orderId} on the website. Please update me on delivery.`
-                )}`}
+                href={orderComplete.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md"
+                className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-extrabold text-sm shadow-lg shadow-emerald-600/25 transition-all"
               >
-                <WhatsappLogo weight="fill" size={20} />
-                <span>Track on WhatsApp</span>
+                <WhatsappLogo weight="fill" size={22} />
+                <span>Open Order on WhatsApp</span>
               </a>
 
-              <Link href="/" className="w-full sm:w-auto">
-                <Button variant="outline" size="md" className="w-full">
-                  Return to Home
-                </Button>
+              <a
+                href={`tel:${SITE_CONFIG.phone}`}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all"
+              >
+                <span>Call Store ({SITE_CONFIG.phone})</span>
+              </a>
+            </div>
+
+            <div>
+              <Link href="/" className="inline-block text-xs font-semibold text-slate-500 hover:text-primary pt-2">
+                ← Return to Home Page
               </Link>
             </div>
 

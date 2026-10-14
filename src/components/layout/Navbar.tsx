@@ -139,7 +139,7 @@ export const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <header className={cn('sticky top-0 z-[200] transition-all duration-300', scrolled ? 'glass shadow-md' : 'bg-white border-b border-border')}>
+    <header className={cn('sticky top-0 z-[200] transition-all duration-300', scrolled ? 'bg-white/95 backdrop-blur-md shadow-md border-b border-border' : 'bg-white border-b border-border')}>
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main navbar row */}
         <nav className={cn('flex items-center gap-6 transition-all duration-300', scrolled ? 'h-16' : 'h-20')} aria-label="Main navigation">

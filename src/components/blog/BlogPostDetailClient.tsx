@@ -158,7 +158,7 @@ export const BlogPostDetailClient: React.FC<BlogPostDetailClientProps> = ({
               <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-primary text-white mb-2">
                 Expert Recommendation
               </span>
-              <h3 className="text-lg sm:text-xl font-bold mb-1">
+              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white">
                 {post.relatedProductName ?? 'Featured Dura Flex Mattress'}
               </h3>
               <p className="text-sm text-slate-300 max-w-lg">

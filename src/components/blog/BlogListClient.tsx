@@ -129,7 +129,7 @@ export const BlogListClient: React.FC<BlogListClientProps> = ({ initialPosts }) 
           <span className="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-white/20 backdrop-blur-sm mb-3">
             Free Orthopedic Consultation
           </span>
-          <h3 className="text-xl sm:text-2xl font-extrabold mb-2">
+          <h3 className="text-xl sm:text-2xl font-extrabold mb-2 text-white">
             Have a Specific Spine or Sleep Concern?
           </h3>
           <p className="text-sm text-white/80 leading-relaxed">
